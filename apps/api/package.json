@@ -1,0 +1,31 @@
+{
+  "name": "@donaoferta/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "REST API — composition root, Hono, GET /health.",
+  "scripts": {
+    "dev": "tsx watch src/local.ts",
+    "build": "tsup",
+    "typecheck": "tsc -b",
+    "test": "vitest run",
+    "lint": "eslint src test"
+  },
+  "donaoferta": {
+    "role": "app"
+  },
+  "dependencies": {
+    "@donaoferta/core-kernel": "workspace:*",
+    "@donaoferta/http-kit": "workspace:*",
+    "@donaoferta/ports": "workspace:*",
+    "@hono/node-server": "1.13.7",
+    "hono": "4.12.18"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.2",
+    "tsup": "8.3.5",
+    "tsx": "4.19.2",
+    "typescript": "5.6.3",
+    "vitest": "2.1.8"
+  }
+}

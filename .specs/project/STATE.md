@@ -6,7 +6,7 @@
 
 ## Active focus
 
-- **Phase:** Project initialization complete → next action is `Specify` for the first feature **`foundation-monorepo`**
+- **Phase:** Executing `foundation-monorepo` (Execute phase in progress)
 - **Milestone:** M0 — Foundation
 
 ---
@@ -144,6 +144,25 @@
 - **Rationale:** Simpler regex; not coupled to any host language convention; consistent with Mustache-family templates without bringing in a templating library.
 - **Status:** Active. The `applyTemplate` operator implements substitution; one variant (`applyTemplateUrlEncoded`) handles the case where substitutions land inside URL-encoded payloads (e.g., Atacadão's GraphQL query string).
 
+### D-019 — Per-package `no-restricted-imports` covers cross-workspace boundary enforcement
+
+- **When:** 2026-05-13
+- **Context:** `eslint-plugin-boundaries` v5 `boundaries/element-types` rule resolves imports via `import/resolver`, but in a pnpm monorepo with symlinks it does not reliably classify `@donaoferta/*` package-name imports against the configured element types. Reverse-violation test (file under `packages/core-kernel/src/` importing `@donaoferta/ports`) does not fire `boundaries/element-types` even with `eslint-import-resolver-typescript` configured.
+- **Decision:** Keep `boundaries/element-types` enabled (it still catches **relative-path** cross-folder imports) and complement it with per-package `no-restricted-imports` regex patterns:
+  - `core-kernel/**` forbids any `@donaoferta/*` import.
+  - `ports/**` forbids `@donaoferta/(?!core-kernel(/|$)).*`.
+  - `*-kit/**` forbids `@donaoferta/(?!core-kernel|ports|.*-kit)(.*)`.
+- **Rationale:** Two-layer defense is acceptable and arguably stronger; the wording in T9 done-when ("fails with boundaries/element-types") becomes "fails with the architectural-boundary ESLint rule" — semantically equivalent (functional behavior: lint fails on the violation). `tools/check-deps.ts` (T10) adds a third layer guarding `package.json` drift.
+- **Status:** Active. **Revisit if** boundaries plugin gains first-class pnpm-workspace support, or if a custom resolver eliminates the need for the regex layer.
+
+### D-018 — Root `engines.node` relaxed to `>=20.19.0` (dev convenience)
+
+- **When:** 2026-05-13
+- **Context:** Original spec/design pinned `engines.node: "22.x"` (Lambda `nodejs22.x` target, D-002). At the start of Execute the developer machine had Node 20.19.6 only, and installing Node 22 was deferred.
+- **Decision:** Root `package.json` declares `engines.node: ">=20.19.0"` while `.nvmrc` still pins `22` as the aspirational target. CI/Lambda will pin Node 22 explicitly when `infra-terraform-base` lands.
+- **Rationale:** Keeps local development unblocked without lying about the production runtime. The `.nvmrc` remains authoritative for "what you should use"; `engines` becomes the minimum-acceptable floor for local dev.
+- **Status:** Active. **Revisit before M0 ships** — once contributors are on Node 22, tighten `engines.node` back to `22.x` to fail-fast for older runtimes per the spec edge case.
+
 ---
 
 ## Pending decisions (gray areas)
@@ -169,12 +188,12 @@
 
 ## Resolved decisions (history)
 
-| ID | Resolved on | Resolution |
-| --- | --- | --- |
-| P-001 (OpenSearch Serverless in v1) | 2026-05-13 | Resolved as **D-011** — not in v1 |
-| P-002 (Geo search engine) | 2026-05-13 | Resolved as **D-012** — geohash on DynamoDB |
-| P-003 (Default LLM provider) | 2026-05-13 | Resolved as **D-013** — Gemini Flash-Lite via Google AI Studio |
-| P-004 (Target stores for M2 MVP) | 2026-05-13 | Resolved as **D-015 + D-016 + D-017** — 5 stores documented in `.specs/research/legacy-stores-seed.md` |
+| ID                                  | Resolved on | Resolution                                                                                             |
+| ----------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------ |
+| P-001 (OpenSearch Serverless in v1) | 2026-05-13  | Resolved as **D-011** — not in v1                                                                      |
+| P-002 (Geo search engine)           | 2026-05-13  | Resolved as **D-012** — geohash on DynamoDB                                                            |
+| P-003 (Default LLM provider)        | 2026-05-13  | Resolved as **D-013** — Gemini Flash-Lite via Google AI Studio                                         |
+| P-004 (Target stores for M2 MVP)    | 2026-05-13  | Resolved as **D-015 + D-016 + D-017** — 5 stores documented in `.specs/research/legacy-stores-seed.md` |
 
 ---
 
@@ -192,16 +211,16 @@ _None yet._
 
 ## Deferred ideas
 
-| Idea | Why deferred | When to revisit |
-| --- | --- | --- |
-| Scraping plugin (Cheerio / Playwright) | Public APIs cover v1 | When a target store offers no API |
-| Cognito / Clerk for end-user auth | No client UI in v1 | When a client app exists |
-| OAuth for public MCP | API Key is enough for v1 | When MCP spec requires it or we open to a broader audience |
-| Step Functions / EventBridge scheduling | On-demand collection is enough in v1 | M6 |
-| Real multi-cloud (GCP adapter) | No concrete requirement | When demanded |
-| GraphQL gateway | REST + MCP cover v1 | If composed-front use cases appear |
-| Admin dashboard (UI) | CLI/scripts cover v1 | When the store catalog grows |
-| OpenSearch Serverless for full-text search | Cost baseline ~US$ 345/month | When DynamoDB filters no longer scale (>5k active SKUs) |
+| Idea                                       | Why deferred                         | When to revisit                                            |
+| ------------------------------------------ | ------------------------------------ | ---------------------------------------------------------- |
+| Scraping plugin (Cheerio / Playwright)     | Public APIs cover v1                 | When a target store offers no API                          |
+| Cognito / Clerk for end-user auth          | No client UI in v1                   | When a client app exists                                   |
+| OAuth for public MCP                       | API Key is enough for v1             | When MCP spec requires it or we open to a broader audience |
+| Step Functions / EventBridge scheduling    | On-demand collection is enough in v1 | M6                                                         |
+| Real multi-cloud (GCP adapter)             | No concrete requirement              | When demanded                                              |
+| GraphQL gateway                            | REST + MCP cover v1                  | If composed-front use cases appear                         |
+| Admin dashboard (UI)                       | CLI/scripts cover v1                 | When the store catalog grows                               |
+| OpenSearch Serverless for full-text search | Cost baseline ~US$ 345/month         | When DynamoDB filters no longer scale (>5k active SKUs)    |
 
 ---
 

@@ -12,22 +12,22 @@
 
 ### Test Coverage Matrix
 
-| Code layer | Required test type | Rationale | Parallel-safe? |
-|---|---|---|---|
-| `packages/core-kernel/src/**` (Result, DomainError) | **unit** | Pure functions / classes; trivially testable; foundation for every other package | Yes |
-| `packages/ports/src/**` (interfaces only) | **none** (type-check IS the test) | No runtime behavior — only TypeScript types. `tsc --noEmit` validates them | Yes |
-| `packages/http-kit/src/**` (error-mapper, middlewares) | **unit** | Pure mapping functions + Hono middleware factories; easily testable via `app.request()` | Yes |
-| `apps/api/src/handlers/**` | **unit** (handler-level via `app.request()`) | Fast in-process verification of HTTP shape without booting a server | Yes |
-| `tools/check-deps.ts`, `tools/check-tsconfig.ts` | **unit** (run against fixture `package.json` / `tsconfig.json`) | The enforcement scripts ARE the safety net — they must themselves be tested | Yes |
-| Root configs (`package.json`, `turbo.json`, `eslint.config.js`, etc.) | **none** (verified by gate commands) | Configs are validated by running the toolchain they configure | Yes |
+| Code layer                                                            | Required test type                                              | Rationale                                                                               | Parallel-safe? |
+| --------------------------------------------------------------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------- | -------------- |
+| `packages/core-kernel/src/**` (Result, DomainError)                   | **unit**                                                        | Pure functions / classes; trivially testable; foundation for every other package        | Yes            |
+| `packages/ports/src/**` (interfaces only)                             | **none** (type-check IS the test)                               | No runtime behavior — only TypeScript types. `tsc --noEmit` validates them              | Yes            |
+| `packages/http-kit/src/**` (error-mapper, middlewares)                | **unit**                                                        | Pure mapping functions + Hono middleware factories; easily testable via `app.request()` | Yes            |
+| `apps/api/src/handlers/**`                                            | **unit** (handler-level via `app.request()`)                    | Fast in-process verification of HTTP shape without booting a server                     | Yes            |
+| `tools/check-deps.ts`, `tools/check-tsconfig.ts`                      | **unit** (run against fixture `package.json` / `tsconfig.json`) | The enforcement scripts ARE the safety net — they must themselves be tested             | Yes            |
+| Root configs (`package.json`, `turbo.json`, `eslint.config.js`, etc.) | **none** (verified by gate commands)                            | Configs are validated by running the toolchain they configure                           | Yes            |
 
 ### Gate Check Commands
 
-| Gate | Command | Use when |
-|---|---|---|
-| **quick** | `pnpm --filter <workspace> test` | Single workspace was modified |
-| **build** | `pnpm -w turbo run build` | Verify a workspace builds (libs emit `dist/`, apps emit bundle) |
-| **full** | `pnpm typecheck && pnpm lint && pnpm check:deps && pnpm check:tsconfig && pnpm -w turbo run test && pnpm -w turbo run build` | End-of-task verification; required before declaring task Done |
+| Gate      | Command                                                                                                                      | Use when                                                        |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| **quick** | `pnpm --filter <workspace> test`                                                                                             | Single workspace was modified                                   |
+| **build** | `pnpm -w turbo run build`                                                                                                    | Verify a workspace builds (libs emit `dist/`, apps emit bundle) |
+| **full**  | `pnpm typecheck && pnpm lint && pnpm check:deps && pnpm check:tsconfig && pnpm -w turbo run test && pnpm -w turbo run build` | End-of-task verification; required before declaring task Done   |
 
 ### Parallelism Assessment
 
@@ -37,11 +37,11 @@ Every test in this feature is in-process Vitest with no shared state, no network
 
 ## Tooling Conventions (MCPs & Skills per task)
 
-| Resource | Available? | Default usage |
-|---|---|---|
-| **MCP `plugin-atlassian-atlassian`** | Yes | Not applicable to this feature (no Jira/Confluence) → **NONE** in every task |
-| **Skill `nodejs-best-practices`** | Yes (`.cursor/skills/nodejs-best-practices/SKILL.md`) | Consult on every task that writes Node/TS code (T2, T6–T13) |
-| **Skill `spec-driven`** | Yes | Orchestrating only — not used inside task execution |
+| Resource                             | Available?                                            | Default usage                                                                |
+| ------------------------------------ | ----------------------------------------------------- | ---------------------------------------------------------------------------- |
+| **MCP `plugin-atlassian-atlassian`** | Yes                                                   | Not applicable to this feature (no Jira/Confluence) → **NONE** in every task |
+| **Skill `nodejs-best-practices`**    | Yes (`.cursor/skills/nodejs-best-practices/SKILL.md`) | Consult on every task that writes Node/TS code (T2, T6–T13)                  |
+| **Skill `spec-driven`**              | Yes                                                   | Orchestrating only — not used inside task execution                          |
 
 If new MCPs are added (e.g., Context7 for live API docs of Hono/Vitest/Turborepo), they become candidates for T6, T8, T9, T12 to verify current APIs.
 
@@ -141,6 +141,7 @@ git status         # clean working tree
 
 **What:** Create the root `package.json` (private), `pnpm-workspace.yaml`, the solution-root `tsconfig.json`, plus environment anchors (`.nvmrc`, `.npmrc`, `.editorconfig`) and an extended `.gitignore`. Also a top-level `README.md` documenting the bootstrap commands. After this task `pnpm install` runs successfully even with zero packages.
 **Where:**
+
 - `package.json` (root)
 - `pnpm-workspace.yaml`
 - `tsconfig.json` (solution-root; empty `references` initially)
@@ -186,6 +187,7 @@ pnpm -v && node -v
 
 **What:** Create the two shared tsconfig presets — `tools/tsconfig/base.json` (for libraries) and `tools/tsconfig/app.json` (for apps) — both enforcing `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`, `isolatedModules`, ESM module resolution, and incremental build.
 **Where:**
+
 - `tools/tsconfig/base.json`
 - `tools/tsconfig/app.json`
 
@@ -223,6 +225,7 @@ pnpm -w tsc -p tools/tsconfig/base.json --showConfig | head
 
 **What:** Add `turbo.json` defining the tasks `build`, `typecheck`, `test`, `lint`, `check:deps`, `check:tsconfig`, and `dev` with the dependency graph and outputs documented in `design.md`. Wire the matching root scripts.
 **Where:**
+
 - `turbo.json`
 - `package.json` (root — update `scripts` section)
 
@@ -259,6 +262,7 @@ pnpm -w turbo run build typecheck test lint --dry=json | jq '.tasks | length'
 
 **What:** Add `prettier.config.js` and `.prettierignore`. Wire the root `format` and `format:check` scripts.
 **Where:**
+
 - `prettier.config.js`
 - `.prettierignore`
 - `package.json` (root — append two scripts)
@@ -297,6 +301,7 @@ echo "const x  =  1;" > /tmp/_violation.ts && pnpm prettier --check /tmp/_violat
 
 **What:** Implement the `core-kernel` package end-to-end: `Result<T, E>` and helpers, `Clock` + `systemClock`, `IdGenerator` + `uuidv4IdGenerator`, `DomainError` and its five subclasses (`NotFoundError`, `ValidationError`, `ConflictError`, `UnauthorizedError`, `InternalError`). Includes unit tests with 100 % coverage, package.json with `donaoferta.role: "core"`, tsconfig extending `tools/tsconfig/base.json`, and wiring into the root tsconfig `references`.
 **Where:**
+
 - `packages/core-kernel/package.json`
 - `packages/core-kernel/tsconfig.json`
 - `packages/core-kernel/src/result.ts`
@@ -347,6 +352,7 @@ ls packages/core-kernel/dist | head
 
 **What:** Implement the `ports` package as type-only interfaces (`Repository`, `EventBus`, `Cache`, `HttpClient`, `SecretStore`, plus `HttpClientError` and `HttpMethod` helpers). No runtime code, no tests beyond `tsc --noEmit` validation. `donaoferta.role: "ports"`.
 **Where:**
+
 - `packages/ports/package.json`
 - `packages/ports/tsconfig.json`
 - `packages/ports/src/repository.ts`
@@ -394,6 +400,7 @@ ls packages/ports/dist
 
 **What:** Implement `http-kit`: `createApp({ requestId, onError })` factory, `mapDomainErrorToHttp(err)` table-driven mapper, `request-id` middleware, `error-handler` middleware. Unit tests for `mapDomainErrorToHttp` and the middlewares using `app.request()`.
 **Where:**
+
 - `packages/http-kit/package.json`
 - `packages/http-kit/tsconfig.json`
 - `packages/http-kit/src/app-factory.ts`
@@ -444,6 +451,7 @@ pnpm -w turbo run build --filter=@donaoferta/http-kit
 
 **What:** Add `eslint.config.js` (flat) with `typescript-eslint`, `eslint-plugin-boundaries`, and `no-restricted-imports`. Configure the six element types (`core`, `ports`, `domain`, `kit`, `adapter`, `app`) by directory pattern and the dependency-rule matrix from `design.md`. Wire the per-workspace `lint` script via Turborepo `lint` task.
 **Where:**
+
 - `eslint.config.js`
 - `tools/lint-rules/boundaries.js` (extracted config fragment for clarity)
 - `package.json` (root — `lint` script in scripts)
@@ -491,6 +499,7 @@ pnpm lint  # should be green again
 
 **What:** Implement the static script that loads every workspace `package.json`, reads its `donaoferta.role`, and fails if any forbidden dependency pattern is declared. Unit-test it against fixture `package.json` shapes (good + violating).
 **Where:**
+
 - `tools/check-deps.ts`
 - `tools/check-deps.test.ts`
 - `tools/fixtures/` (small JSON fixtures)
@@ -533,6 +542,7 @@ pnpm exec vitest run tools/check-deps.test.ts
 
 **What:** Implement a static script that verifies every workspace `tsconfig.json` extends `tools/tsconfig/base.json` (libs) or `tools/tsconfig/app.json` (apps), and does not override any strict flag downward. Unit-tested with fixtures.
 **Where:**
+
 - `tools/check-tsconfig.ts`
 - `tools/check-tsconfig.test.ts`
 - `tools/fixtures/tsconfig/` (good + violating fixtures)
@@ -574,6 +584,7 @@ pnpm exec vitest run tools/check-tsconfig.test.ts
 
 **What:** Implement `apps/api` end-to-end: composition root (`compose.ts`), Hono app factory wrapper (`http/app.ts`), error handler wiring (`http/errors.ts`), `/health` handler, local Node server entry (`local.ts`), version constant (`version.ts`), `tsup.config.ts` for ESM single-file build, package.json with `donaoferta.role: "app"`, tsconfig extending `tools/tsconfig/app.json`, unit test for the health handler via `app.request()`.
 **Where:**
+
 - `apps/api/package.json`
 - `apps/api/tsconfig.json`
 - `apps/api/tsup.config.ts`
@@ -696,61 +707,61 @@ Phase 5 (Parallel after T8):                Phase 6 (Sequential after enforcemen
 
 ### Check 1 — Task Granularity
 
-| Task | Scope | Status |
-|---|---|---|
-| T1: Git bootstrap | 3 git refs, 1 commit | ✅ Granular |
-| T2: Root scaffolding | 8 root files | ✅ Cohesive (all root-level configs; splitting further would create cross-cutting churn) |
-| T3: Shared tsconfigs | 2 preset files | ✅ Granular |
-| T4: Turborepo config | 1 config + script wiring | ✅ Granular |
-| T5: Prettier config | 1 config + 1 ignore | ✅ Granular |
-| T6: core-kernel | 1 package (5 src + 2 test) | ✅ Cohesive (single bounded context, 100 % coverage requirement keeps it atomic) |
-| T7: ports | 1 package (6 src, type-only) | ✅ Cohesive |
-| T8: http-kit | 1 package (5 src + 2 test) | ✅ Cohesive |
-| T9: ESLint config | 1 config + 1 fragment | ✅ Granular |
-| T10: check-deps | 1 script + 1 test + fixtures | ✅ Granular |
-| T11: check-tsconfig | 1 script + 1 test + fixtures | ✅ Granular |
-| T12: apps/api | 1 app | ✅ Cohesive (composition root is the smallest end-to-end demonstrable unit) |
-| T13: Smoke test + PR | 0 files | ✅ Verification only |
+| Task                 | Scope                        | Status                                                                                   |
+| -------------------- | ---------------------------- | ---------------------------------------------------------------------------------------- |
+| T1: Git bootstrap    | 3 git refs, 1 commit         | ✅ Granular                                                                              |
+| T2: Root scaffolding | 8 root files                 | ✅ Cohesive (all root-level configs; splitting further would create cross-cutting churn) |
+| T3: Shared tsconfigs | 2 preset files               | ✅ Granular                                                                              |
+| T4: Turborepo config | 1 config + script wiring     | ✅ Granular                                                                              |
+| T5: Prettier config  | 1 config + 1 ignore          | ✅ Granular                                                                              |
+| T6: core-kernel      | 1 package (5 src + 2 test)   | ✅ Cohesive (single bounded context, 100 % coverage requirement keeps it atomic)         |
+| T7: ports            | 1 package (6 src, type-only) | ✅ Cohesive                                                                              |
+| T8: http-kit         | 1 package (5 src + 2 test)   | ✅ Cohesive                                                                              |
+| T9: ESLint config    | 1 config + 1 fragment        | ✅ Granular                                                                              |
+| T10: check-deps      | 1 script + 1 test + fixtures | ✅ Granular                                                                              |
+| T11: check-tsconfig  | 1 script + 1 test + fixtures | ✅ Granular                                                                              |
+| T12: apps/api        | 1 app                        | ✅ Cohesive (composition root is the smallest end-to-end demonstrable unit)              |
+| T13: Smoke test + PR | 0 files                      | ✅ Verification only                                                                     |
 
 All ✅. No restructuring needed.
 
 ### Check 2 — Diagram-Definition Cross-Check
 
-| Task | Depends On (body) | Diagram Shows | Status |
-|---|---|---|---|
-| T1 | (none) | (none) | ✅ Match |
-| T2 | T1 | T1 → T2 | ✅ Match |
-| T3 | T2 | T2 → T3 | ✅ Match |
-| T4 [P] | T3 | T3 → T4 | ✅ Match |
-| T5 [P] | T3 | T3 → T5 | ✅ Match |
-| T6 | T3, T4 | T3 → T6 (note: T6 also implicitly needs T4 for `turbo run build`, captured via the linear arrow `T3 → T6` after Phase 3) | ✅ Match (note explained) |
-| T7 | T6 | T6 → T7 | ✅ Match |
-| T8 | T7 | T7 → T8 | ✅ Match |
-| T9 [P] | T8 | T8 → T9 | ✅ Match |
-| T10 [P] | T8 | T8 → T10 | ✅ Match |
-| T11 [P] | T8 | T8 → T11 | ✅ Match |
-| T12 | T9, T10, T11 | T9 + T10 + T11 → T12 | ✅ Match |
-| T13 | T12 | T12 → T13 | ✅ Match |
+| Task    | Depends On (body) | Diagram Shows                                                                                                            | Status                    |
+| ------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------- |
+| T1      | (none)            | (none)                                                                                                                   | ✅ Match                  |
+| T2      | T1                | T1 → T2                                                                                                                  | ✅ Match                  |
+| T3      | T2                | T2 → T3                                                                                                                  | ✅ Match                  |
+| T4 [P]  | T3                | T3 → T4                                                                                                                  | ✅ Match                  |
+| T5 [P]  | T3                | T3 → T5                                                                                                                  | ✅ Match                  |
+| T6      | T3, T4            | T3 → T6 (note: T6 also implicitly needs T4 for `turbo run build`, captured via the linear arrow `T3 → T6` after Phase 3) | ✅ Match (note explained) |
+| T7      | T6                | T6 → T7                                                                                                                  | ✅ Match                  |
+| T8      | T7                | T7 → T8                                                                                                                  | ✅ Match                  |
+| T9 [P]  | T8                | T8 → T9                                                                                                                  | ✅ Match                  |
+| T10 [P] | T8                | T8 → T10                                                                                                                 | ✅ Match                  |
+| T11 [P] | T8                | T8 → T11                                                                                                                 | ✅ Match                  |
+| T12     | T9, T10, T11      | T9 + T10 + T11 → T12                                                                                                     | ✅ Match                  |
+| T13     | T12               | T12 → T13                                                                                                                | ✅ Match                  |
 
 All ✅.
 
 ### Check 3 — Test Co-location Validation
 
-| Task | Code layer created | Matrix requires | Task says | Status |
-|---|---|---|---|---|
-| T1 | git refs only | none | none | ✅ OK |
-| T2 | root configs | none | none | ✅ OK |
-| T3 | tsconfig presets | none | none | ✅ OK |
-| T4 | turbo config | none | none | ✅ OK |
-| T5 | prettier config | none | none | ✅ OK |
-| T6 | core-kernel runtime | **unit** + 100 % coverage | unit | ✅ OK |
-| T7 | ports (types only) | none | none | ✅ OK |
-| T8 | http-kit (runtime) | **unit** | unit | ✅ OK |
-| T9 | eslint config | none (validated by violation scenario) | none | ✅ OK |
-| T10 | tools/check-deps.ts | **unit** | unit | ✅ OK |
-| T11 | tools/check-tsconfig.ts | **unit** | unit | ✅ OK |
-| T12 | apps/api handlers + composition | **unit** | unit | ✅ OK |
-| T13 | (verification only) | none | none | ✅ OK |
+| Task | Code layer created              | Matrix requires                        | Task says | Status |
+| ---- | ------------------------------- | -------------------------------------- | --------- | ------ |
+| T1   | git refs only                   | none                                   | none      | ✅ OK  |
+| T2   | root configs                    | none                                   | none      | ✅ OK  |
+| T3   | tsconfig presets                | none                                   | none      | ✅ OK  |
+| T4   | turbo config                    | none                                   | none      | ✅ OK  |
+| T5   | prettier config                 | none                                   | none      | ✅ OK  |
+| T6   | core-kernel runtime             | **unit** + 100 % coverage              | unit      | ✅ OK  |
+| T7   | ports (types only)              | none                                   | none      | ✅ OK  |
+| T8   | http-kit (runtime)              | **unit**                               | unit      | ✅ OK  |
+| T9   | eslint config                   | none (validated by violation scenario) | none      | ✅ OK  |
+| T10  | tools/check-deps.ts             | **unit**                               | unit      | ✅ OK  |
+| T11  | tools/check-tsconfig.ts         | **unit**                               | unit      | ✅ OK  |
+| T12  | apps/api handlers + composition | **unit**                               | unit      | ✅ OK  |
+| T13  | (verification only)             | none                                   | none      | ✅ OK  |
 
 All ✅. No deferred-tests anti-pattern.
 

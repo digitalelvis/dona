@@ -1,0 +1,38 @@
+{
+  "name": "donaoferta",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "donaoferta — serverless Node monorepo (API, MCP, Collector, Agent).",
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20.19.0",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "lint": "turbo run lint && pnpm check:deps && pnpm check:tsconfig",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check:deps": "tsx tools/check-deps.ts",
+    "check:tsconfig": "tsx tools/check-tsconfig.ts",
+    "test:tools": "vitest run --config tools/vitest.config.ts",
+    "dev:api": "pnpm --filter @donaoferta/api dev"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.2",
+    "eslint": "9.39.4",
+    "eslint-import-resolver-typescript": "3.7.0",
+    "eslint-plugin-boundaries": "5.4.0",
+    "eslint-plugin-import-x": "4.6.1",
+    "globals": "15.14.0",
+    "prettier": "3.4.2",
+    "tsx": "4.19.2",
+    "turbo": "2.3.3",
+    "typescript": "5.6.3",
+    "typescript-eslint": "8.59.3",
+    "vitest": "2.1.8"
+  }
+}

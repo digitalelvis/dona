@@ -1,0 +1,33 @@
+{
+  "name": "@donaoferta/ports",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Cross-cutting port interfaces (Repository, EventBus, Cache, HttpClient, SecretStore).",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b --emitDeclarationOnly false",
+    "test": "echo \"@donaoferta/ports: type-only package, no runtime tests\"",
+    "lint": "eslint src"
+  },
+  "donaoferta": {
+    "role": "ports"
+  },
+  "dependencies": {
+    "@donaoferta/core-kernel": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "5.6.3"
+  }
+}

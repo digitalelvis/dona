@@ -1,16 +1,26 @@
 # ==========================================
-# SDD: AI & Environment Agent Configuration
+# Node / pnpm / TypeScript
 # ==========================================
-# Ignore agent cache/session state (ephemeral, may contain sensitive paths)
-.cursor/
-.windsurf/
-.vscode/
-.claude/
-.antigravity/
-.agent/
-.agents/
+node_modules/
+dist/
+**/dist-types/
+coverage/
+*.tsbuildinfo
 
-# Keep these tracked (project DNA):
-!/.agents/rules/
-!/.agents/skills/
-!/.specs/
+# ==========================================
+# Turborepo cache
+# ==========================================
+.turbo/
+
+# ==========================================
+# Logs and env files
+# ==========================================
+*.log
+.env
+.env.local
+.env.*.local
+
+# ==========================================
+# OS
+# ==========================================
+.DS_Store
