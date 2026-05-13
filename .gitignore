@@ -1,0 +1,16 @@
+# ==========================================
+# SDD: AI & Environment Agent Configuration
+# ==========================================
+# Ignore agent cache/session state (ephemeral, may contain sensitive paths)
+.cursor/
+.windsurf/
+.vscode/
+.claude/
+.antigravity/
+.agent/
+.agents/
+
+# Keep these tracked (project DNA):
+!/.agents/rules/
+!/.agents/skills/
+!/.specs/

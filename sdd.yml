@@ -1,0 +1,15 @@
+version: 0.1.2
+stacks:
+  - nodejs
+agents:
+  - cursor
+ide: none
+lint: true
+database: []
+security: []
+skills:
+  include:
+    - spec-driven
+    - nodejs-best-practices
+  exclude: []
+updatedAt: '2026-05-12T12:17:54.850Z'
