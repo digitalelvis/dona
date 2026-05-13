@@ -20,7 +20,7 @@
     "typecheck": "tsc -b --emitDeclarationOnly false",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "echo \"@donaoferta/core-kernel: lint deferred to T9\""
+    "lint": "eslint src test"
   },
   "donaoferta": {
     "role": "core"

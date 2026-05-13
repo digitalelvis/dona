@@ -144,6 +144,17 @@
 - **Rationale:** Simpler regex; not coupled to any host language convention; consistent with Mustache-family templates without bringing in a templating library.
 - **Status:** Active. The `applyTemplate` operator implements substitution; one variant (`applyTemplateUrlEncoded`) handles the case where substitutions land inside URL-encoded payloads (e.g., Atacadão's GraphQL query string).
 
+### D-019 — Per-package `no-restricted-imports` covers cross-workspace boundary enforcement
+
+- **When:** 2026-05-13
+- **Context:** `eslint-plugin-boundaries` v5 `boundaries/element-types` rule resolves imports via `import/resolver`, but in a pnpm monorepo with symlinks it does not reliably classify `@donaoferta/*` package-name imports against the configured element types. Reverse-violation test (file under `packages/core-kernel/src/` importing `@donaoferta/ports`) does not fire `boundaries/element-types` even with `eslint-import-resolver-typescript` configured.
+- **Decision:** Keep `boundaries/element-types` enabled (it still catches **relative-path** cross-folder imports) and complement it with per-package `no-restricted-imports` regex patterns:
+  - `core-kernel/**` forbids any `@donaoferta/*` import.
+  - `ports/**` forbids `@donaoferta/(?!core-kernel(/|$)).*`.
+  - `*-kit/**` forbids `@donaoferta/(?!core-kernel|ports|.*-kit)(.*)`.
+- **Rationale:** Two-layer defense is acceptable and arguably stronger; the wording in T9 done-when ("fails with boundaries/element-types") becomes "fails with the architectural-boundary ESLint rule" — semantically equivalent (functional behavior: lint fails on the violation). `tools/check-deps.ts` (T10) adds a third layer guarding `package.json` drift.
+- **Status:** Active. **Revisit if** boundaries plugin gains first-class pnpm-workspace support, or if a custom resolver eliminates the need for the regex layer.
+
 ### D-018 — Root `engines.node` relaxed to `>=20.19.0` (dev convenience)
 
 - **When:** 2026-05-13

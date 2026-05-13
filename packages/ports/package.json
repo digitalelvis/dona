@@ -19,7 +19,7 @@
     "build": "tsc -b",
     "typecheck": "tsc -b --emitDeclarationOnly false",
     "test": "echo \"@donaoferta/ports: type-only package, no runtime tests\"",
-    "lint": "echo \"@donaoferta/ports: lint deferred to T9\""
+    "lint": "eslint src"
   },
   "donaoferta": {
     "role": "ports"
