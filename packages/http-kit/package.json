@@ -1,0 +1,37 @@
+{
+  "name": "@donaoferta/http-kit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Hono app factory, request-id and error-handler middlewares, DomainError → HTTP mapper.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b --emitDeclarationOnly false",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "echo \"@donaoferta/http-kit: lint deferred to T9\""
+  },
+  "donaoferta": {
+    "role": "kit"
+  },
+  "dependencies": {
+    "@donaoferta/core-kernel": "workspace:*",
+    "@donaoferta/ports": "workspace:*",
+    "hono": "4.12.18"
+  },
+  "devDependencies": {
+    "typescript": "5.6.3",
+    "vitest": "2.1.8"
+  }
+}

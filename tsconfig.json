@@ -5,5 +5,9 @@
   },
   "include": [],
   "exclude": ["node_modules", "**/dist", "**/coverage", "**/.turbo"],
-  "references": [{ "path": "packages/core-kernel" }, { "path": "packages/ports" }]
+  "references": [
+    { "path": "packages/core-kernel" },
+    { "path": "packages/ports" },
+    { "path": "packages/http-kit" }
+  ]
 }
