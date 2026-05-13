@@ -74,7 +74,9 @@ async function readJsonRelaxed<T>(file: string): Promise<T> {
   return JSON.parse(stripped) as T;
 }
 
-async function listWorkspaceTsconfigs(root: string): Promise<{ file: string; kind: WorkspaceKind }[]> {
+async function listWorkspaceTsconfigs(
+  root: string,
+): Promise<{ file: string; kind: WorkspaceKind }[]> {
   const out: { file: string; kind: WorkspaceKind }[] = [];
   for (const [group, kind] of [
     ["packages", "lib"],

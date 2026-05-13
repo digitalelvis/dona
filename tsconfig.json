@@ -8,6 +8,7 @@
   "references": [
     { "path": "packages/core-kernel" },
     { "path": "packages/ports" },
-    { "path": "packages/http-kit" }
+    { "path": "packages/http-kit" },
+    { "path": "apps/api" }
   ]
 }
