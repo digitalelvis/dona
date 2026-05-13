@@ -1,0 +1,59 @@
+name: Deploy prod
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm -w turbo run build
+
+      - name: Configure AWS (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.GHA_PROD_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.10.*"
+          terraform_wrapper: false
+
+      - name: Terraform apply (api prod)
+        working-directory: infra/terraform/stacks/api
+        env:
+          TF_IN_AUTOMATION: true
+        run: |
+          terraform init -input=false -backend-config=backends/prod.hcl
+          terraform apply -input=false -var-file=envs/prod.tfvars -auto-approve
+
+      - name: Write invoke URL to job summary
+        working-directory: infra/terraform/stacks/api
+        run: |
+          echo "prod: $(terraform output -raw invoke_url)" >> "${GITHUB_STEP_SUMMARY}"
