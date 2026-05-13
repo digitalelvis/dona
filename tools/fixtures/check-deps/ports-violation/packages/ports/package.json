@@ -1,0 +1,12 @@
+{
+  "name": "@fixture/ports-bad",
+  "version": "0.0.0",
+  "private": true,
+  "donaoferta": {
+    "role": "ports"
+  },
+  "dependencies": {
+    "@donaoferta/core-kernel": "workspace:*",
+    "@aws-sdk/client-dynamodb": "*"
+  }
+}

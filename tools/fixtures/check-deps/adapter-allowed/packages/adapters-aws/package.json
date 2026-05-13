@@ -1,0 +1,11 @@
+{
+  "name": "@fixture/adapters-aws",
+  "version": "0.0.0",
+  "private": true,
+  "donaoferta": {
+    "role": "adapter"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "*"
+  }
+}

@@ -18,6 +18,7 @@
     "format:check": "prettier --check .",
     "check:deps": "tsx tools/check-deps.ts",
     "check:tsconfig": "tsx tools/check-tsconfig.ts",
+    "test:tools": "vitest run --config tools/vitest.config.ts",
     "dev:api": "pnpm --filter @donaoferta/api dev"
   },
   "devDependencies": {
@@ -31,6 +32,7 @@
     "tsx": "4.19.2",
     "turbo": "2.3.3",
     "typescript": "5.6.3",
-    "typescript-eslint": "8.59.3"
+    "typescript-eslint": "8.59.3",
+    "vitest": "2.1.8"
   }
 }

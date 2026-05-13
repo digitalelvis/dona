@@ -1,0 +1,11 @@
+{
+  "name": "@fixture/ports",
+  "version": "0.0.0",
+  "private": true,
+  "donaoferta": {
+    "role": "ports"
+  },
+  "dependencies": {
+    "@donaoferta/core-kernel": "workspace:*"
+  }
+}
