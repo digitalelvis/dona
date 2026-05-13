@@ -19,5 +19,8 @@
     "check:tsconfig": "tsx tools/check-tsconfig.ts",
     "dev:api": "pnpm --filter @donaoferta/api dev"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "tsx": "4.19.2",
+    "typescript": "5.6.3"
+  }
 }

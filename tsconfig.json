@@ -1,4 +1,9 @@
 {
-  "files": [],
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [],
+  "exclude": ["node_modules", "**/dist", "**/coverage", "**/.turbo"],
   "references": []
 }
