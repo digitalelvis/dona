@@ -6,8 +6,9 @@
 
 ## Active focus
 
-- **Phase:** Executing `foundation-monorepo` (Execute phase in progress)
+- **Phase:** Specify → `infra-terraform-base` (M0, second feature)
 - **Milestone:** M0 — Foundation
+- **Previous:** `foundation-monorepo` ✅ merged to `v0.1.x` via [PR #1](https://github.com/digitalelvis/dona/pull/1)
 
 ---
 
@@ -235,4 +236,6 @@ _None yet._
 
 ## Next session resume hint
 
-> Next action: `specify feature foundation-monorepo` — capture testable requirements for the monorepo skeleton, base packages and cross-cutting contracts of M0.
+> `foundation-monorepo` ✅ Done (merged PR #1).
+> Active: specifying `infra-terraform-base` — Lambda handler adapter for `apps/api`, API Gateway HTTP API, Terraform modules (`lambda-fn`, `http-api`, `iam-policy`), stacks (`shared`, `api`), environment `dev`, GitHub Actions CI with OIDC.
+> After `infra-terraform-base`: specify `observability-base` — `packages/observability`, pino logger, OpenTelemetry + ADOT, X-Ray.

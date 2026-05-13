@@ -8,7 +8,7 @@ Milestones are organized around **independently shippable value**. Each mileston
 
 ---
 
-## M0 — Foundation 📋
+## M0 — Foundation 🚧
 
 **Goal:** Repository runnable end-to-end with a trivial endpoint deployed to AWS through Terraform, observability wired in, and CI/CD validating pull requests.
 
@@ -27,7 +27,7 @@ Milestones are organized around **independently shippable value**. Each mileston
 - CI pipeline is green end-to-end on a sample PR
 - Monthly cost of the `dev` environment ≤ US$ 1
 
-**Expected features:** `foundation-monorepo`, `infra-terraform-base`, `observability-base`
+**Expected features:** `foundation-monorepo` ✅, `infra-terraform-base` 🚧, `observability-base` 📋
 
 ---
 
