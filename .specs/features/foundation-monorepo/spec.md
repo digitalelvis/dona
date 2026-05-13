@@ -19,15 +19,15 @@ Without this foundation, every later feature would re-litigate package structure
 
 ## Out of Scope
 
-| Feature | Reason |
-| --- | --- |
-| Terraform / IaC | Belongs to `infra-terraform-base` |
-| OpenTelemetry, pino logger, X-Ray | Belongs to `observability-base` |
-| Domain logic (Store, Branch, Product, etc.) | Belongs to M1+ features; this feature only ships scaffolding |
+| Feature                                                       | Reason                                                                                                                                       |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Terraform / IaC                                               | Belongs to `infra-terraform-base`                                                                                                            |
+| OpenTelemetry, pino logger, X-Ray                             | Belongs to `observability-base`                                                                                                              |
+| Domain logic (Store, Branch, Product, etc.)                   | Belongs to M1+ features; this feature only ships scaffolding                                                                                 |
 | Lambda-specific adapter (`aws-lambda` event/context handling) | This feature only requires `/health` to run locally; Lambda wiring lands in `infra-terraform-base` together with the API Gateway integration |
-| MCP server, AI agent, Price Collector | Future milestones |
-| GitHub Actions workflows | Drafted here only as far as `pnpm` scripts shape; full CI lands in `infra-terraform-base` where it needs OIDC and Terraform |
-| Husky / commitlint / changesets | Deferred until the team grows; not part of v1 monorepo foundation |
+| MCP server, AI agent, Price Collector                         | Future milestones                                                                                                                            |
+| GitHub Actions workflows                                      | Drafted here only as far as `pnpm` scripts shape; full CI lands in `infra-terraform-base` where it needs OIDC and Terraform                  |
+| Husky / commitlint / changesets                               | Deferred until the team grows; not part of v1 monorepo foundation                                                                            |
 
 ---
 
@@ -184,43 +184,43 @@ Without this foundation, every later feature would re-litigate package structure
 
 ## Requirement Traceability
 
-| Requirement ID | Story | Phase | Status |
-| -------------- | ----- | ----- | ------ |
-| FOUND-01 | P1: Initialize the monorepo skeleton | Design | Pending |
-| FOUND-02 | P1: Initialize the monorepo skeleton | Design | Pending |
-| FOUND-03 | P1: Initialize the monorepo skeleton | Design | Pending |
-| FOUND-04 | P1: Initialize the monorepo skeleton | Design | Pending |
-| FOUND-05 | P1: Initialize the monorepo skeleton | Design | Pending |
-| FOUND-06 | P1: Provide the core kernel primitives | Design | Pending |
-| FOUND-07 | P1: Provide the core kernel primitives | Design | Pending |
-| FOUND-08 | P1: Provide the core kernel primitives | Design | Pending |
-| FOUND-09 | P1: Provide the core kernel primitives | Design | Pending |
-| FOUND-10 | P1: Provide the core kernel primitives | Design | Pending |
-| FOUND-11 | P1: Provide the core kernel primitives | Design | Pending |
-| FOUND-12 | P1: Define cross-cutting ports | Design | Pending |
-| FOUND-13 | P1: Define cross-cutting ports | Design | Pending |
-| FOUND-14 | P1: Define cross-cutting ports | Design | Pending |
-| FOUND-15 | P1: Define cross-cutting ports | Design | Pending |
-| FOUND-16 | P1: Define cross-cutting ports | Design | Pending |
-| FOUND-17 | P1: Define cross-cutting ports | Design | Pending |
-| FOUND-18 | P1: Stand up apps/api with /health | Design | Pending |
-| FOUND-19 | P1: Stand up apps/api with /health | Design | Pending |
-| FOUND-20 | P1: Stand up apps/api with /health | Design | Pending |
-| FOUND-21 | P1: Stand up apps/api with /health | Design | Pending |
-| FOUND-22 | P1: Stand up apps/api with /health | Design | Pending |
-| FOUND-23 | P1: Stand up apps/api with /health | Design | Pending |
-| FOUND-24 | P1: Enforce architectural boundaries via lint | Design | Pending |
-| FOUND-25 | P1: Enforce architectural boundaries via lint | Design | Pending |
-| FOUND-26 | P1: Enforce architectural boundaries via lint | Design | Pending |
-| FOUND-27 | P1: Enforce architectural boundaries via lint | Design | Pending |
-| FOUND-28 | P1: Enforce architectural boundaries via lint | Design | Pending |
-| FOUND-29 | P2: Centralized TypeScript configuration | - | Pending |
-| FOUND-30 | P2: Centralized TypeScript configuration | - | Pending |
-| FOUND-31 | P2: Shared lint and format presets | - | Pending |
-| FOUND-32 | P2: Shared lint and format presets | - | Pending |
-| FOUND-33 | P2: Shared lint and format presets | - | Pending |
-| FOUND-34 | P3: Pre-commit hook | - | Pending |
-| FOUND-35 | P3: Pre-commit hook | - | Pending |
+| Requirement ID | Story                                         | Phase  | Status  |
+| -------------- | --------------------------------------------- | ------ | ------- |
+| FOUND-01       | P1: Initialize the monorepo skeleton          | Design | Pending |
+| FOUND-02       | P1: Initialize the monorepo skeleton          | Design | Pending |
+| FOUND-03       | P1: Initialize the monorepo skeleton          | Design | Pending |
+| FOUND-04       | P1: Initialize the monorepo skeleton          | Design | Pending |
+| FOUND-05       | P1: Initialize the monorepo skeleton          | Design | Pending |
+| FOUND-06       | P1: Provide the core kernel primitives        | Design | Pending |
+| FOUND-07       | P1: Provide the core kernel primitives        | Design | Pending |
+| FOUND-08       | P1: Provide the core kernel primitives        | Design | Pending |
+| FOUND-09       | P1: Provide the core kernel primitives        | Design | Pending |
+| FOUND-10       | P1: Provide the core kernel primitives        | Design | Pending |
+| FOUND-11       | P1: Provide the core kernel primitives        | Design | Pending |
+| FOUND-12       | P1: Define cross-cutting ports                | Design | Pending |
+| FOUND-13       | P1: Define cross-cutting ports                | Design | Pending |
+| FOUND-14       | P1: Define cross-cutting ports                | Design | Pending |
+| FOUND-15       | P1: Define cross-cutting ports                | Design | Pending |
+| FOUND-16       | P1: Define cross-cutting ports                | Design | Pending |
+| FOUND-17       | P1: Define cross-cutting ports                | Design | Pending |
+| FOUND-18       | P1: Stand up apps/api with /health            | Design | Pending |
+| FOUND-19       | P1: Stand up apps/api with /health            | Design | Pending |
+| FOUND-20       | P1: Stand up apps/api with /health            | Design | Pending |
+| FOUND-21       | P1: Stand up apps/api with /health            | Design | Pending |
+| FOUND-22       | P1: Stand up apps/api with /health            | Design | Pending |
+| FOUND-23       | P1: Stand up apps/api with /health            | Design | Pending |
+| FOUND-24       | P1: Enforce architectural boundaries via lint | Design | Pending |
+| FOUND-25       | P1: Enforce architectural boundaries via lint | Design | Pending |
+| FOUND-26       | P1: Enforce architectural boundaries via lint | Design | Pending |
+| FOUND-27       | P1: Enforce architectural boundaries via lint | Design | Pending |
+| FOUND-28       | P1: Enforce architectural boundaries via lint | Design | Pending |
+| FOUND-29       | P2: Centralized TypeScript configuration      | -      | Pending |
+| FOUND-30       | P2: Centralized TypeScript configuration      | -      | Pending |
+| FOUND-31       | P2: Shared lint and format presets            | -      | Pending |
+| FOUND-32       | P2: Shared lint and format presets            | -      | Pending |
+| FOUND-33       | P2: Shared lint and format presets            | -      | Pending |
+| FOUND-34       | P3: Pre-commit hook                           | -      | Pending |
+| FOUND-35       | P3: Pre-commit hook                           | -      | Pending |
 
 **ID format:** `FOUND-NN`
 **Status values:** Pending → In Design → In Tasks → Implementing → Verified

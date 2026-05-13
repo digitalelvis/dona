@@ -168,16 +168,16 @@ Milestones are organized around **independently shippable value**. Each mileston
 
 ## Backlog (not yet prioritized)
 
-| Theme | Trigger to prioritize |
-| --- | --- |
-| End-user authentication (Cognito or Clerk) | When a client app exists |
-| OAuth for public MCP (MCP 2025 compliance) | When MCP is exposed outside the trusted network |
-| Scraping plugin (Cheerio / Playwright on Lambda containers) | When a target store has no API |
-| Recommendation engine | When the dataset is rich enough |
-| OpenSearch Serverless for full-text product search | When DynamoDB filters no longer scale (>5k active SKUs) |
-| Real multi-cloud (GCP adapter) | Concrete business requirement |
-| Multi-tenant / white-label | B2B demand |
-| GraphQL gateway | If composed-front use cases appear |
+| Theme                                                       | Trigger to prioritize                                   |
+| ----------------------------------------------------------- | ------------------------------------------------------- |
+| End-user authentication (Cognito or Clerk)                  | When a client app exists                                |
+| OAuth for public MCP (MCP 2025 compliance)                  | When MCP is exposed outside the trusted network         |
+| Scraping plugin (Cheerio / Playwright on Lambda containers) | When a target store has no API                          |
+| Recommendation engine                                       | When the dataset is rich enough                         |
+| OpenSearch Serverless for full-text product search          | When DynamoDB filters no longer scale (>5k active SKUs) |
+| Real multi-cloud (GCP adapter)                              | Concrete business requirement                           |
+| Multi-tenant / white-label                                  | B2B demand                                              |
+| GraphQL gateway                                             | If composed-front use cases appear                      |
 
 ---
 

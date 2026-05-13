@@ -63,15 +63,15 @@
 
 **Explicitly out of scope in v1:**
 
-| Feature | Reason |
-| --- | --- |
-| Mobile / web frontend | Platform is API + MCP; UI belongs to consumers |
-| HTML scraping (Cheerio / Playwright) | Public store APIs cover the initial target stores; scraping becomes a Collector plugin in a future milestone |
-| End-user authentication (OAuth, social, etc.) | API Key covers v1; user auth lands when there is a client app |
-| Administrative dashboard | `IntegrationConfig` and stores are managed via CLI/scripts initially; admin UI is future |
-| Scheduled collection (cron) | v1 is on-demand only; scheduled collection lands in M6 |
-| BI / analytics dashboard | Operational metrics via CloudWatch are enough for v1 |
-| Multi-tenant / white-label | Single-tenant in v1 |
+| Feature                                       | Reason                                                                                                       |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Mobile / web frontend                         | Platform is API + MCP; UI belongs to consumers                                                               |
+| HTML scraping (Cheerio / Playwright)          | Public store APIs cover the initial target stores; scraping becomes a Collector plugin in a future milestone |
+| End-user authentication (OAuth, social, etc.) | API Key covers v1; user auth lands when there is a client app                                                |
+| Administrative dashboard                      | `IntegrationConfig` and stores are managed via CLI/scripts initially; admin UI is future                     |
+| Scheduled collection (cron)                   | v1 is on-demand only; scheduled collection lands in M6                                                       |
+| BI / analytics dashboard                      | Operational metrics via CloudWatch are enough for v1                                                         |
+| Multi-tenant / white-label                    | Single-tenant in v1                                                                                          |
 
 ---
 

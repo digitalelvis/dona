@@ -177,12 +177,12 @@
 
 ## Resolved decisions (history)
 
-| ID | Resolved on | Resolution |
-| --- | --- | --- |
-| P-001 (OpenSearch Serverless in v1) | 2026-05-13 | Resolved as **D-011** — not in v1 |
-| P-002 (Geo search engine) | 2026-05-13 | Resolved as **D-012** — geohash on DynamoDB |
-| P-003 (Default LLM provider) | 2026-05-13 | Resolved as **D-013** — Gemini Flash-Lite via Google AI Studio |
-| P-004 (Target stores for M2 MVP) | 2026-05-13 | Resolved as **D-015 + D-016 + D-017** — 5 stores documented in `.specs/research/legacy-stores-seed.md` |
+| ID                                  | Resolved on | Resolution                                                                                             |
+| ----------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------ |
+| P-001 (OpenSearch Serverless in v1) | 2026-05-13  | Resolved as **D-011** — not in v1                                                                      |
+| P-002 (Geo search engine)           | 2026-05-13  | Resolved as **D-012** — geohash on DynamoDB                                                            |
+| P-003 (Default LLM provider)        | 2026-05-13  | Resolved as **D-013** — Gemini Flash-Lite via Google AI Studio                                         |
+| P-004 (Target stores for M2 MVP)    | 2026-05-13  | Resolved as **D-015 + D-016 + D-017** — 5 stores documented in `.specs/research/legacy-stores-seed.md` |
 
 ---
 
@@ -200,16 +200,16 @@ _None yet._
 
 ## Deferred ideas
 
-| Idea | Why deferred | When to revisit |
-| --- | --- | --- |
-| Scraping plugin (Cheerio / Playwright) | Public APIs cover v1 | When a target store offers no API |
-| Cognito / Clerk for end-user auth | No client UI in v1 | When a client app exists |
-| OAuth for public MCP | API Key is enough for v1 | When MCP spec requires it or we open to a broader audience |
-| Step Functions / EventBridge scheduling | On-demand collection is enough in v1 | M6 |
-| Real multi-cloud (GCP adapter) | No concrete requirement | When demanded |
-| GraphQL gateway | REST + MCP cover v1 | If composed-front use cases appear |
-| Admin dashboard (UI) | CLI/scripts cover v1 | When the store catalog grows |
-| OpenSearch Serverless for full-text search | Cost baseline ~US$ 345/month | When DynamoDB filters no longer scale (>5k active SKUs) |
+| Idea                                       | Why deferred                         | When to revisit                                            |
+| ------------------------------------------ | ------------------------------------ | ---------------------------------------------------------- |
+| Scraping plugin (Cheerio / Playwright)     | Public APIs cover v1                 | When a target store offers no API                          |
+| Cognito / Clerk for end-user auth          | No client UI in v1                   | When a client app exists                                   |
+| OAuth for public MCP                       | API Key is enough for v1             | When MCP spec requires it or we open to a broader audience |
+| Step Functions / EventBridge scheduling    | On-demand collection is enough in v1 | M6                                                         |
+| Real multi-cloud (GCP adapter)             | No concrete requirement              | When demanded                                              |
+| GraphQL gateway                            | REST + MCP cover v1                  | If composed-front use cases appear                         |
+| Admin dashboard (UI)                       | CLI/scripts cover v1                 | When the store catalog grows                               |
+| OpenSearch Serverless for full-text search | Cost baseline ~US$ 345/month         | When DynamoDB filters no longer scale (>5k active SKUs)    |
 
 ---
 
