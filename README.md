@@ -28,6 +28,68 @@ pnpm dev:api
 curl -s localhost:3000/health | jq
 ```
 
+## AWS deployment setup
+
+Infrastructure lives under [`infra/terraform/`](infra/terraform/). Region is **`us-east-1`**; Terraform **`~> 1.10`**. OIDC trust in [`infra/terraform/stacks/shared/main.tf`](infra/terraform/stacks/shared/main.tf) targets repository **`digitalelvis/dona`** — fork/adapt the `repo:…` subjects if you use another remote.
+
+### 1. Bootstrap remote state (once per AWS account)
+
+Creates the versioned S3 bucket `donaoferta-tfstate-<account_id>` and DynamoDB table `donaoferta-tf-locks` for locks. This stack uses **local** Terraform state (see [`infra/terraform/bootstrap/README.md`](infra/terraform/bootstrap/README.md)).
+
+```bash
+cd infra/terraform/bootstrap
+terraform init
+terraform apply
+```
+
+Note the outputs `tfstate_bucket_name` and `tf_locks_table_name`.
+
+### 2. Configure backend partials
+
+Files under `infra/terraform/stacks/api/backends/*.hcl` and the shared example [`infra/terraform/stacks/shared/backend.hcl.example`](infra/terraform/stacks/shared/backend.hcl.example) ship with placeholder account id **`111111111111`**. Replace that segment with your **12-digit AWS account id** everywhere (same value as in the bootstrap bucket name).
+
+For the shared stack, copy the example to a local (gitignored) `backend.hcl` next to `main.tf`, adjust `bucket`, then:
+
+```bash
+cd infra/terraform/stacks/shared
+terraform init -backend-config=backend.hcl
+terraform apply
+```
+
+Record the outputs `role_arns` and `oidc_provider_arn`.
+
+### 3. GitHub Actions repository variables
+
+In GitHub: **Settings → Secrets and variables → Actions → Variables** (repository variables, not secrets):
+
+| Variable | Value |
+| -------- | ----- |
+| `GHA_STAGING_ROLE_ARN` | ARN of IAM role `donaoferta-gha-staging` (from `role_arns.staging`) |
+| `GHA_PROD_ROLE_ARN` | ARN of IAM role `donaoferta-gha-prod` (from `role_arns.prod`) |
+
+Workflows authenticate with OIDC (`permissions: id-token: write`); do **not** store long-lived `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` in the repo.
+
+### 4. What runs automatically
+
+| Workflow | Trigger | AWS role | Effect |
+| -------- | ------- | -------- | ------ |
+| [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | PRs targeting `v0.1.x` or `main` | `GHA_STAGING_ROLE_ARN` | Lint/test/build + `terraform plan` for **staging** (`infra/terraform/stacks/api`) |
+| [`.github/workflows/deploy-staging.yml`](.github/workflows/deploy-staging.yml) | Push to branches matching `v*.x` (e.g. `v0.1.x`) | `GHA_STAGING_ROLE_ARN` | Build + `terraform apply` **staging** |
+| [`.github/workflows/deploy-prod.yml`](.github/workflows/deploy-prod.yml) | Push to `main` | `GHA_PROD_ROLE_ARN` | Build + `terraform apply` **prod** |
+
+`dev` is **manual only** (no deploy workflow): build the API bundle, then apply from `infra/terraform/stacks/api` using `backends/dev.hcl` and `envs/dev.tfvars`.
+
+### 5. Manual apply pattern (example: `dev`)
+
+```bash
+pnpm -w turbo run build --filter=@donaoferta/api
+cd infra/terraform/stacks/api
+terraform init -backend-config=backends/dev.hcl
+terraform apply -var-file=envs/dev.tfvars
+```
+
+Smoke test: `curl -s "$(terraform output -raw invoke_url)health"`.
+
 ## Repository layout
 
 ```
