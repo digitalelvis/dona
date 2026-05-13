@@ -6,7 +6,7 @@
 
 ## Active focus
 
-- **Phase:** Project initialization complete → next action is `Specify` for the first feature **`foundation-monorepo`**
+- **Phase:** Executing `foundation-monorepo` (Execute phase in progress)
 - **Milestone:** M0 — Foundation
 
 ---
@@ -143,6 +143,14 @@
 - **Decision:** Engine placeholders use **`{term}` and `{branchId}`** — plain curly braces, camelCase variable names, no `$` sigil.
 - **Rationale:** Simpler regex; not coupled to any host language convention; consistent with Mustache-family templates without bringing in a templating library.
 - **Status:** Active. The `applyTemplate` operator implements substitution; one variant (`applyTemplateUrlEncoded`) handles the case where substitutions land inside URL-encoded payloads (e.g., Atacadão's GraphQL query string).
+
+### D-018 — Root `engines.node` relaxed to `>=20.19.0` (dev convenience)
+
+- **When:** 2026-05-13
+- **Context:** Original spec/design pinned `engines.node: "22.x"` (Lambda `nodejs22.x` target, D-002). At the start of Execute the developer machine had Node 20.19.6 only, and installing Node 22 was deferred.
+- **Decision:** Root `package.json` declares `engines.node: ">=20.19.0"` while `.nvmrc` still pins `22` as the aspirational target. CI/Lambda will pin Node 22 explicitly when `infra-terraform-base` lands.
+- **Rationale:** Keeps local development unblocked without lying about the production runtime. The `.nvmrc` remains authoritative for "what you should use"; `engines` becomes the minimum-acceptable floor for local dev.
+- **Status:** Active. **Revisit before M0 ships** — once contributors are on Node 22, tighten `engines.node` back to `22.x` to fail-fast for older runtimes per the spec edge case.
 
 ---
 

@@ -1,0 +1,23 @@
+{
+  "name": "donaoferta",
+  "version": "0.1.0",
+  "private": true,
+  "description": "donaoferta — serverless Node monorepo (API, MCP, Collector, Agent).",
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20.19.0",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "lint": "turbo run lint && pnpm check:deps && pnpm check:tsconfig",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check:deps": "tsx tools/check-deps.ts",
+    "check:tsconfig": "tsx tools/check-tsconfig.ts",
+    "dev:api": "pnpm --filter @donaoferta/api dev"
+  },
+  "devDependencies": {}
+}
