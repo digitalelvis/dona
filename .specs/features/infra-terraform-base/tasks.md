@@ -26,7 +26,8 @@
 5. **API stacks:** per env: `cd infra/terraform/stacks/api` → `terraform init -backend-config=backends/<env>.hcl` → `terraform apply -var-file=envs/<env>.tfvars` (or let `deploy-staging` / `deploy-prod` apply after merge). Ensure `backends/*.hcl` bucket matches your account (replace `111111111111` placeholder).
 6. **Smoke:** `curl "$(terraform output -raw invoke_url)/health"` for dev + staging (expect `200`, JSON with `"status":"ok"`).
 7. **CI proof:** open PR to `v0.1.x` or `main` → `CI` job green (incl. `terraform plan` staging).
-8. **PR:** `feat/infra-terraform-base → v0.1.x` with verification notes + invoke URLs (when ready).
+8. **GitHub Branch Rulesets:** Follow `design.md` → "Operation — M0: manual GitHub Settings". Create ruleset `release-branches-governance` targeting `~DEFAULT_BRANCH` + `refs/heads/v*.*.x` with rules: require PR, required status check `CI / validate`, block force push, restrict deletions. Verify: open a draft PR against `v0.1.x` and confirm the merge button is disabled until `CI / validate` passes (INFRA-29–33).
+9. **PR:** `feat/infra-terraform-base → v0.1.x` with verification notes + invoke URLs (when ready).
 
 ---
 

@@ -56,6 +56,8 @@ terraform init -backend-config=backend.hcl
 terraform apply
 ```
 
+If the account already has an IAM OIDC provider for `token.actions.githubusercontent.com`, pass `-var='existing_github_oidc_provider_arn=arn:aws:iam::<ACCOUNT_ID>:oidc-provider/token.actions.githubusercontent.com'` (or set it in a `*.tfvars` file) so Terraform does not try to create a duplicate.
+
 Record the outputs `role_arns` and `oidc_provider_arn`.
 
 ### 3. GitHub Actions repository variables

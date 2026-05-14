@@ -428,6 +428,110 @@ GitHub repository variables (not secrets) needed:
 
 ---
 
+## GitHub Branch Rulesets
+
+### KD-10 — Branch Rulesets (modern API) vs classic branch protection
+
+GitHub offers two enforcement mechanisms: the legacy "Branch protection rules" (per-branch, no bypass tiers) and the newer "Branch Rulesets" (per-repo or org, pattern-based, granular bypass actors, importable/exportable). Rulesets are chosen here because they support:
+
+- Multiple target patterns in a single rule (e.g. `~DEFAULT_BRANCH` + `refs/heads/v*.*.x`).
+- Explicit bypass actors (repository admins only, audit-logged).
+- Future extension to org-level without re-creating rules.
+- An API-stable format that maps directly to `github_repository_ruleset` in the GitHub Terraform provider (follow-up to this feature).
+
+Branch protection rules are deprecated for new configurations; rulesets are the GitHub-recommended path going forward.
+
+### Enforcement model
+
+```mermaid
+flowchart LR
+  subgraph contributor["Contributor"]
+    push["direct push to main/v*.x"]
+    pr["Open PR → v0.1.x or main"]
+  end
+
+  subgraph ruleset["Branch Ruleset"]
+    rule_pr["require_pull_request"]
+    rule_check["required_status_checks\nCI / validate"]
+    rule_fp["non_fast_forward\n(block force push)"]
+    rule_del["deletion\n(restrict deletions)"]
+  end
+
+  subgraph gha["GitHub Actions"]
+    job_validate["CI workflow\njob: validate"]
+  end
+
+  subgraph protected["Protected refs"]
+    main_br["main"]
+    vx_br["v*.x (e.g. v0.1.x)"]
+  end
+
+  push -->|"blocked by ruleset"| ruleset
+  pr --> ruleset
+  rule_check -->|"triggers / awaits"| job_validate
+  job_validate -->|"reports check:\nCI / validate"| rule_check
+  rule_pr & rule_check & rule_fp & rule_del -->|"all rules pass → merge allowed"| protected
+```
+
+### Rules matrix
+
+| Ref pattern | Example targets | Require PR | Required status check | Block force push | Restrict deletions |
+|---|---|---|---|---|---|
+| `~DEFAULT_BRANCH` | `main` | Yes | `CI / validate` | Yes | Yes |
+| `refs/heads/v*.*.x` | `v0.1.x`, `v1.0.x` | Yes | `CI / validate` | Yes | Yes |
+| `refs/heads/feat/*` | feature branches | No — intentionally unprotected | None | No | No |
+
+**Minimum required approvals:** 0 for M0 (single-developer project). Increase when the team grows.
+
+**Bypass actors:** Repository admins only. Bypass is audit-logged in GitHub → Settings → Audit log. No bypass for regular contributors or GitHub Actions bots.
+
+### Required status check context string
+
+GitHub identifies a check by the string `<workflow-name> / <job-name>`. For this repository that is:
+
+```
+CI / validate
+```
+
+This string is derived from `name: CI` (line 1 of [`.github/workflows/ci.yml`](.github/workflows/ci.yml)) and `validate:` (the single job defined in that file). **If either value is renamed, the required check must be updated in the Ruleset to match**, otherwise the rule will never be satisfied and all PRs will be permanently blocked.
+
+To confirm the exact string before configuring the Ruleset: open any PR that triggered the workflow → "View all checks" → note the check label as rendered by GitHub.
+
+### Governance alignment
+
+Rulesets translate the branch model from [`git-flow-release.mdc`](../../.cursor/rules/git-flow-release.mdc) into enforced policy:
+
+| Git flow rule | Enforced by |
+|---|---|
+| Never develop directly on `main` | `require_pull_request` on `~DEFAULT_BRANCH` |
+| PRs must have green CI before merge | `required_status_checks: CI / validate` |
+| No history rewriting on protected branches | `non_fast_forward` (block force push) |
+| Release branches are long-lived, not deleted | `deletion` (restrict deletions) |
+
+Rulesets complement the AWS OIDC roles (KD-5): OIDC controls what GitHub Actions can do in AWS; rulesets control what contributors can do in GitHub. They are independent layers with no overlap.
+
+### Operation — M0: manual GitHub Settings
+
+For M0, rulesets are configured manually via **GitHub → Settings → Rules → Rulesets → New ruleset**. No new Terraform stack or credentials are required.
+
+Steps:
+1. Go to `github.com/digitalelvis/dona` → **Settings** → **Rules** → **Rulesets** → **New branch ruleset**.
+2. Name: `release-branches-governance`.
+3. **Enforcement status:** Active.
+4. **Bypass actors:** Add `Repository admin` role.
+5. **Targets:** Add `~DEFAULT_BRANCH`; add pattern `refs/heads/v*.*.x`.
+6. **Rules to enable:**
+   - Restrict deletions ✓
+   - Require a pull request before merging ✓ (required approvals: 0)
+   - Require status checks to pass ✓ → add `CI / validate`
+   - Block force pushes ✓
+7. Save.
+8. Verify with the test described in INFRA-31 (see `tasks.md` step 9).
+
+**Terraform follow-up (post-M0):** The `hashicorp/github` Terraform provider exposes `github_repository_ruleset`. Automating this requires a GitHub PAT with `repo` + `administration:write` scope (or a GitHub App), a separate state file, and a decision on where the token is stored and who runs `apply`. This is deferred to a later governance feature to keep M0 scope bounded.
+
+---
+
 ## Testing Strategy
 
 | Component | Test type | What |
