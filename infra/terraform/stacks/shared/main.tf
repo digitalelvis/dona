@@ -1,7 +1,5 @@
 data "aws_caller_identity" "current" {}
 
-data "aws_iam_openid_connect_providers" "all" {}
-
 data "aws_dynamodb_table" "tf_locks" {
   name = "donaoferta-tf-locks"
 }
@@ -16,14 +14,12 @@ locals {
   state_bucket     = "donaoferta-tfstate-${local.account_id}"
   state_bucket_arn = "arn:aws:s3:::${local.state_bucket}"
 
-  github_oidc_provider_arns = [
-    for arn in data.aws_iam_openid_connect_providers.all.arns : arn
-    if endswith(arn, ":oidc-provider/token.actions.githubusercontent.com")
-  ]
+  # aws_iam_openid_connect_providers (plural) is not available in AWS provider ~> 5.x.
+  # Greenfield: leave existing_github_oidc_provider_arn empty so we create the provider.
+  # If the account already has GitHub OIDC: set the variable to that ARN (or import the resource).
+  create_github_oidc = var.existing_github_oidc_provider_arn == ""
 
-  create_github_oidc = length(local.github_oidc_provider_arns) == 0
-
-  oidc_provider_arn = local.create_github_oidc ? aws_iam_openid_connect_provider.github[0].arn : local.github_oidc_provider_arns[0]
+  oidc_provider_arn = local.create_github_oidc ? aws_iam_openid_connect_provider.github[0].arn : var.existing_github_oidc_provider_arn
 
   lambda_actions = [
     "lambda:UpdateFunctionCode",

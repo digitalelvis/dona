@@ -1,4 +1,4 @@
-# Copy to `backend.hcl` and replace `111111111111` with your AWS account ID (same as bootstrap outputs).
+# Copy to `backend.hcl` and replace `111111111111` with  AWS account ID (same as bootstrap outputs).
 
 bucket         = "donaoferta-tfstate-111111111111"
 key            = "shared/terraform.tfstate"
