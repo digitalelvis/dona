@@ -16,6 +16,9 @@ module "lambda" {
   memory_size      = var.memory_size
   timeout          = var.timeout
 
+  architecture = var.lambda_architecture
+  layers         = []
+
   environment_variables = {
     LOG_LEVEL = var.log_level
   }

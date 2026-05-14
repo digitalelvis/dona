@@ -1,7 +1,14 @@
+import { existsSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+
 import type { APIGatewayProxyEventV2, Context } from "aws-lambda";
 import { describe, expect, it } from "vitest";
 
 import { handler } from "../src/handler.js";
+
+const distDir = join(dirname(fileURLToPath(import.meta.url)), "..", "dist");
+const handlerArtifact = join(distDir, "handler.mjs");
 
 function minimalApiGwV2Event(overrides: Partial<APIGatewayProxyEventV2> = {}): APIGatewayProxyEventV2 {
   const now = Date.now();
@@ -41,7 +48,21 @@ describe("Lambda handler", () => {
     const result = await handler(minimalApiGwV2Event(), minimalContext);
     expect(result).toBeDefined();
     expect(result!.statusCode).toBe(200);
-    const body = JSON.parse(result!.body ?? "{}") as { status: string };
+    const body = JSON.parse(result!.body ?? "{}") as { status: string; traceId: string | null };
     expect(body.status).toBe("ok");
+    expect(body.traceId).toBeNull();
+  });
+});
+
+describe.skipIf(!existsSync(handlerArtifact))("Lambda handler build artefact", () => {
+  it("dist/handler.mjs loads", async () => {
+    const mod = await import(pathToFileURL(handlerArtifact).href);
+    expect(typeof mod.handler).toBe("function");
+  });
+
+  it("GET /health via dist/handler.mjs", async () => {
+    const { handler: builtHandler } = await import(pathToFileURL(handlerArtifact).href);
+    const result = await builtHandler(minimalApiGwV2Event(), minimalContext);
+    expect(result?.statusCode).toBe(200);
   });
 });

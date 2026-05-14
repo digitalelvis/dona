@@ -16,10 +16,16 @@ variable "memory_size" {
 
 variable "timeout" {
   type        = number
-  description = "Lambda timeout (seconds)."
+  description = "Lambda function timeout (seconds)."
 }
 
 variable "log_level" {
   type        = string
   description = "LOG_LEVEL injected into the Lambda function."
+}
+
+variable "lambda_architecture" {
+  type        = string
+  default     = "arm64"
+  description = "Lambda CPU architecture: arm64 or x86_64."
 }

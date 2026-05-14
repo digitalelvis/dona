@@ -1,3 +1,9 @@
+variable "architecture" {
+  type        = string
+  default     = "arm64"
+  description = "Lambda CPU architecture, e.g. arm64 or x86_64."
+}
+
 variable "function_name" {
   type        = string
   description = "Lambda function name."

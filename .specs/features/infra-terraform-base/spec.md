@@ -2,7 +2,7 @@
 
 > **Milestone:** M0 — Foundation
 > **Scope size:** Large (multi-component: Lambda adapter, Terraform IaC, CI/CD pipeline)
-> **Sibling features in M0:** `foundation-monorepo` ✅, `observability-base` 📋
+> **Sibling features in M0:** `foundation-monorepo` ✅, `observability-base` 🚧
 > **Depends on:** `foundation-monorepo` (merged ✅)
 
 ## Problem Statement
@@ -51,7 +51,7 @@ This feature closes that gap: it wires `apps/api` to AWS Lambda + API Gateway, p
 
 1. WHEN `apps/api/src/handler.ts` is built THEN it SHALL export a `handler` function compatible with the AWS Lambda `nodejs22.x` runtime and API Gateway HTTP API (payload format 2.0).
 2. WHEN the Lambda handler receives an API Gateway event THEN it SHALL invoke the same Hono application built by `compose()` and return the correctly shaped Lambda response.
-3. WHEN the Lambda handler receives `GET /health` THEN it SHALL return `{ statusCode: 200, body: '{"status":"ok",...}' }` (same JSON as the local path).
+3. WHEN the Lambda handler receives `GET /health` THEN it SHALL return `{ statusCode: 200, body: '{"status":"ok",...,"traceId":...}' }` (same JSON contract as the local path, including `traceId` when OTel is active).
 4. WHEN `pnpm -w turbo run build --filter=@donaoferta/api` runs THEN it SHALL emit both `dist/local.mjs` (unchanged) and `dist/handler.mjs` as separate entry-points.
 5. WHEN the handler entry-point is unit-tested THEN it SHALL be tested by constructing a minimal API Gateway v2 event and asserting on the returned `statusCode` and `body`.
 
@@ -67,7 +67,7 @@ This feature closes that gap: it wires `apps/api` to AWS Lambda + API Gateway, p
 
 **Acceptance Criteria:**
 
-1. WHEN `infra/terraform/bootstrap/` is applied THEN it SHALL create an S3 bucket (`donaoferta-tf-state-<account_id>`) with versioning and server-side encryption, and a DynamoDB table (`donaoferta-tf-locks`) for state locking.
+1. WHEN `infra/terraform/bootstrap/` is applied THEN it SHALL create an S3 bucket (`donaoferta-tfstate-<account_id>`) with versioning and server-side encryption, and a DynamoDB table (`donaoferta-tf-locks`) for state locking.
 2. WHEN the S3 bucket is created THEN it SHALL block all public access.
 3. WHEN the bootstrap is applied a second time THEN Terraform SHALL report no changes (idempotent).
 4. WHEN any subsequent stack configures its backend THEN it SHALL reference the same bucket and lock table.
@@ -84,7 +84,7 @@ This feature closes that gap: it wires `apps/api` to AWS Lambda + API Gateway, p
 
 **Acceptance Criteria:**
 
-1. WHEN `modules/lambda-fn` is instantiated THEN it SHALL create a Lambda function with configurable `function_name`, `handler`, `runtime` (`nodejs22.x`), `memory_size`, `timeout`, `environment` variables, and an optional `layers` list.
+1. WHEN `modules/lambda-fn` is instantiated THEN it SHALL create a Lambda function with configurable `function_name`, `handler`, `runtime` (`nodejs22.x`), `memory_size`, `timeout`, `architecture` (`arm64` / `x86_64`), `environment` (tag label), `environment_variables` map, optional `layers` list, and X-Ray **PassThrough** tracing mode so ADOT can own segments when layers are attached.
 2. WHEN `modules/http-api` is instantiated THEN it SHALL create an API Gateway HTTP API, a `$default` route proxying all traffic to a given Lambda ARN, a Lambda permission allowing API GW to invoke the function, and output the `invoke_url`.
 3. WHEN `modules/iam-policy` is instantiated THEN it SHALL attach a named inline or managed policy to a given IAM role ARN, with configurable `effect`, `actions`, and `resources`.
 4. WHEN any module is applied THEN all resources SHALL include a `tags` map inheriting at least `project = "donaoferta"` and `environment`.
@@ -120,7 +120,7 @@ This feature closes that gap: it wires `apps/api` to AWS Lambda + API Gateway, p
 
 1. WHEN the `api` stack is applied THEN it SHALL create a Lambda function `donaoferta-api-dev` with the bundled `dist/handler.mjs` from `apps/api`, using the `nodejs22.x` runtime.
 2. WHEN the `api` stack is applied THEN it SHALL create an API Gateway HTTP API routing all requests to the Lambda function and output the `invoke_url`.
-3. WHEN `curl <invoke_url>/health` is called from any host THEN the response SHALL be HTTP `200` with body `{ "status": "ok", "uptimeSeconds": <n>, "version": "0.1.0" }`.
+3. WHEN `GET /health` is called THEN it SHALL return `{ "status": "ok", "uptimeSeconds": <n>, "version": "<semver>", "traceId": <string|null> }` (`traceId` populated when OpenTelemetry is active; `null` until `observability-base` completes).
 4. WHEN a deploy is triggered THEN it SHALL package the Lambda function from the Turborepo `dist/` artifact without uploading `node_modules/` (all dependencies bundled by tsup).
 5. WHEN the `api` stack is applied a second time with no code changes THEN Terraform SHALL report no changes (idempotent).
 
@@ -227,7 +227,7 @@ This feature closes that gap: it wires `apps/api` to AWS Lambda + API Gateway, p
 
 ## Success Criteria
 
-- [ ] `curl https://<api-gw-invoke-url>/health` returns `200 {"status":"ok",...}` from AWS `dev`.
+- [ ] `curl https://<api-gw-invoke-url>/health` returns `200` with JSON including `"status":"ok"` (and `traceId` once `observability-base` is verified).
 - [ ] CI pipeline is green end-to-end on a sample PR (typecheck, lint, test, build, terraform plan all pass).
 - [ ] Deploy workflows run on the configured branches without any manually stored AWS credentials (`deploy-staging` → staging, `deploy-prod` → prod).
 - [ ] Monthly cost of the `dev` environment ≤ US$ 1 (Lambda + API GW free tier).

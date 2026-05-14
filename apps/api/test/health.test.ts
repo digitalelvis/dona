@@ -21,10 +21,12 @@ describe("apps/api HTTP", () => {
       status: string;
       uptimeSeconds: number;
       version: string;
+      traceId: string | null;
     };
     expect(body.status).toBe("ok");
     expect(body.version).toBe("0.1.0");
     expect(body.uptimeSeconds).toBe(42);
+    expect(body.traceId).toBeNull();
   });
 
   it("GET /health includes version field for contract stability", async () => {
@@ -32,6 +34,14 @@ describe("apps/api HTTP", () => {
     const res = await app.request("/health");
     const body = (await res.json()) as { version: string };
     expect(body.version).toMatch(/^\d+\.\d+\.\d+$/);
+  });
+
+  it("GET / redirects to /health", async () => {
+    const { app } = compose({ requestId: () => "req-root" });
+    const res = await app.request("/", { redirect: "manual" });
+    expect(res.status).toBe(302);
+    expect(res.headers.get("Location")).toBe("/health");
+    expect(res.headers.get("X-Request-Id")).toBe("req-root");
   });
 
   it("unknown route returns 404 NOT_FOUND with requestId", async () => {

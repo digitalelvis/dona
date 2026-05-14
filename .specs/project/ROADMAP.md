@@ -29,7 +29,7 @@ Milestones are organized around **independently shippable value**. Each mileston
 - CI is green end-to-end on a sample PR to `v0.1.x` or `main`, including the **staging** Terraform plan job
 - Non-production environments remain within the project’s low monthly cost guardrail (validated during TI10 / operator sign-off)
 
-**Expected features:** `foundation-monorepo` ✅, `infra-terraform-base` ⏸, `observability-base` 📋
+**Expected features:** `foundation-monorepo` ✅, `infra-terraform-base` ✅, `observability-base` 🚧
 
 ### M0 — post `infra-terraform-base` (before closing M0)
 

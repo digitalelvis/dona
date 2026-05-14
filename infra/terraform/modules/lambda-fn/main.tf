@@ -25,7 +25,9 @@ resource "aws_iam_role_policy_attachment" "basic_execution" {
 }
 
 resource "aws_lambda_function" "this" {
-  depends_on = [aws_iam_role_policy_attachment.basic_execution]
+  depends_on = [
+    aws_iam_role_policy_attachment.basic_execution,
+  ]
 
   function_name = var.function_name
   role          = aws_iam_role.execution.arn
@@ -35,10 +37,15 @@ resource "aws_lambda_function" "this" {
   filename         = var.filename
   source_code_hash = var.source_code_hash
 
-  memory_size = var.memory_size
-  timeout     = var.timeout
+  memory_size   = var.memory_size
+  timeout       = var.timeout
+  architectures = [var.architecture]
 
   layers = var.layers
+
+  tracing_config {
+    mode = "PassThrough"
+  }
 
   dynamic "environment" {
     for_each = length(var.environment_variables) > 0 ? [1] : []

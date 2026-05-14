@@ -26,6 +26,7 @@ Run the API locally:
 ```bash
 pnpm dev:api
 curl -s localhost:3000/health | jq
+# GET / redirects to /health (same behaviour on API Gateway invoke URLs, which end with /).
 ```
 
 ## AWS deployment setup
@@ -90,17 +91,18 @@ terraform init -backend-config=backends/dev.hcl
 terraform apply -var-file=envs/dev.tfvars
 ```
 
-Smoke test: `curl -s "$(terraform output -raw invoke_url)health"`.
+Smoke test: `curl -s "$(terraform output -raw invoke_url)health"` (the raw `invoke_url` value already ends with `/`, so do not insert an extra slash before `health`).
 
 ## Repository layout
 
 ```
 apps/
-  api/             # REST API (Hono) — composition root + /health
+  api/             # REST API (Hono) — composition root; GET / → /health; GET /health (status, uptime, version, traceId)
 packages/
   core-kernel/     # Result, Clock, IdGenerator, DomainError (zero deps)
   ports/           # Cross-cutting interfaces (Repository, EventBus, Cache, HttpClient, SecretStore)
   http-kit/        # Hono app factory + middlewares + DomainError → HTTP mapping
+  observability/   # pino + OpenTelemetry helpers (M0 feature `observability-base`; wire-up in progress)
 tools/
   tsconfig/        # Shared tsconfig presets (base.json, app.json)
   check-deps.ts    # Static guard: forbids cloud SDKs in disallowed roles
@@ -145,6 +147,8 @@ Both lint (`pnpm lint`) and the static `pnpm check:deps` script enforce these bo
 - Roadmap and milestones → [`.specs/project/ROADMAP.md`](.specs/project/ROADMAP.md)
 - Persistent decisions and state → [`.specs/project/STATE.md`](.specs/project/STATE.md)
 - Foundation feature spec → [`.specs/features/foundation-monorepo/`](.specs/features/foundation-monorepo/)
+- Infra + CI/CD spec → [`.specs/features/infra-terraform-base/`](.specs/features/infra-terraform-base/)
+- Observability (logs, traces, `/health` traceId) → [`.specs/features/observability-base/`](.specs/features/observability-base/)
 
 ## License
 

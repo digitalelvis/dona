@@ -14,6 +14,7 @@ export const boundariesConfig = {
     { type: "core", pattern: "packages/core-kernel/**", mode: "folder" },
     { type: "ports", pattern: "packages/ports/**", mode: "folder" },
     { type: "kit", pattern: "packages/*-kit/**", mode: "folder" },
+    { type: "kit", pattern: "packages/observability/**", mode: "folder" },
     {
       type: "domain",
       pattern: "packages/{stores,catalog,users,collector,agent}/**",

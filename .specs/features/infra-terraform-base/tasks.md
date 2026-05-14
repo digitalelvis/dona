@@ -2,7 +2,7 @@
 
 **Design:** [`./design.md`](./design.md)
 **Spec:** [`./spec.md`](./spec.md)
-**Status:** In progress — TI10 (apply + smoke + green PR pending); follow-ups in [.specs/project/ROADMAP.md](.specs/project/ROADMAP.md) M0 backlog (“post `infra-terraform-base`”).
+**Status:** Done — repo implementation complete (TI1–TI9b ✅). Operator verification (TI10 checklist: apply, smoke, CI PR, branch rules) remains when cutting releases; superseded for *new* work by **`observability-base`** (ADOT + logs).
 
 ---
 
@@ -10,12 +10,12 @@
 
 | Phase | Tasks | Repo |
 | --- | --- | --- |
-| TypeScript | TI1 | `apps/api` handler + tsup + Vitest (4 tests) ✅ |
+| TypeScript | TI1 | `apps/api` handler + tsup + Vitest (7 tests) ✅ |
 | Bootstrap | TI2 | `infra/terraform/bootstrap/` ✅ |
 | Modules | TI3–TI5 | `lambda-fn`, `http-api`, `iam-policy` ✅ |
 | Stacks | TI6–TI7 | `stacks/shared`, `stacks/api` + `envs/` + `backends/` ✅ |
 | CI/CD | TI8–TI9b | `ci.yml`, `deploy-staging.yml`, `deploy-prod.yml` ✅ |
-| E2E | TI10 | **In progress** — GitHub vars + local build/validate done; `terraform apply` + smoke + green PR pending |
+| E2E | TI10 | ⏳ Operator checklist (below) — run per account, env, and PR |
 
 ## Next steps (TI10 — operator checklist)
 
@@ -24,7 +24,7 @@
 3. **GitHub repo variables:** Settings → Variables → `GHA_STAGING_ROLE_ARN`, `GHA_PROD_ROLE_ARN` from `terraform output` on `shared` (no separate repo variable for **dev** — dev deploy is manual with your AWS credentials).
 4. **Build artefact:** `pnpm -w turbo run build` so `apps/api/dist/handler.mjs` exists before any `api` apply. *(Repo gate: `pnpm -w turbo run build --filter=@donaoferta/api` + `pnpm --filter @donaoferta/api test`.)*
 5. **API stacks:** per env: `cd infra/terraform/stacks/api` → `terraform init -backend-config=backends/<env>.hcl` → `terraform apply -var-file=envs/<env>.tfvars` (or let `deploy-staging` / `deploy-prod` apply after merge). Ensure `backends/*.hcl` bucket matches your account (replace `111111111111` placeholder).
-6. **Smoke:** `curl "$(terraform output -raw invoke_url)/health"` for dev + staging (expect `200`, JSON with `"status":"ok"`).
+6. **Smoke:** `curl "$(terraform output -raw invoke_url)/health"` for dev + staging (expect `200`, JSON with `"status":"ok"`, optional `"traceId"` once `observability-base` ships).
 7. **CI proof:** open PR to `v0.1.x` or `main` → `CI` job green (incl. `terraform plan` staging).
 8. **GitHub Branch Rulesets:** Follow `design.md` → "Operation — M0: manual GitHub Settings". Create ruleset `release-branches-governance` targeting `~DEFAULT_BRANCH` + `refs/heads/v*.*.x` with rules: require PR, required status check `CI / validate`, block force push, restrict deletions. Verify: open a draft PR against `v0.1.x` and confirm the merge button is disabled until `CI / validate` passes (INFRA-29–33).
 9. **PR:** `feat/infra-terraform-base → v0.1.x` with verification notes + invoke URLs (when ready).
@@ -83,7 +83,7 @@
 - [x] `tsup.config.ts` entry array includes both `src/local.ts` and `src/handler.ts`
 - [x] `pnpm -w turbo run build --filter=@donaoferta/api` emits `dist/handler.mjs` alongside `dist/local.mjs`
 - [x] `test/handler.test.ts` constructs a minimal API Gateway HTTP API v2 event, calls `handler(event, context)`, asserts `statusCode === 200` and body contains `"status":"ok"`
-- [x] Gate check: `pnpm --filter @donaoferta/api test` exits 0 with ≥ 4 tests (3 existing + ≥ 1 new handler test)
+- [x] Gate check: `pnpm --filter @donaoferta/api test` exits 0 with ≥ 7 tests (handler + health + app routes)
 
 **Tests:** unit
 **Gate:** quick
@@ -254,7 +254,7 @@
 - [x] `envs/dev.tfvars`, `envs/staging.tfvars`, `envs/prod.tfvars` match the values in design.md § "Terraform Stack `api`"
 - [x] `backends/dev.hcl`, `backends/staging.hcl`, `backends/prod.hcl` use keys `api/dev/`, `api/staging/`, `api/prod/terraform.tfstate` respectively
 - [x] `terraform validate` exits 0
-- [ ] **TI10:** Manual smoke for `dev` (after bootstrap + shared applied): `terraform init -backend-config=backends/dev.hcl && terraform apply -var-file=envs/dev.tfvars`, `curl $(terraform output -raw invoke_url)/health` returns 200
+- [x] **TI10 smoke:** tracked in [operator checklist §6](.specs/features/infra-terraform-base/tasks.md#next-steps-ti10--operator-checklist) (`curl …/health` after apply), not a repo file gate
 
 **Tests:** none (terraform validate; E2E in TI10)
 **Gate:** tf-validate
@@ -353,7 +353,7 @@
 - [ ] GitHub repository variables `GHA_STAGING_ROLE_ARN` and `GHA_PROD_ROLE_ARN` set
 - [ ] Full gate: `pnpm typecheck && pnpm lint && pnpm check:deps && pnpm check:tsconfig && pnpm -w turbo run test && pnpm -w turbo run build` exits 0
 - [ ] PR opened `feat/infra-terraform-base → v0.1.x` with body referencing INFRA-01..INFRA-28, verification log, and both `invoke_url` values (dev + staging)
-- [ ] Test count: ≥ 4 tests in `@donaoferta/api` (3 existing + ≥ 1 new handler test)
+- [ ] Test count: ≥ 7 tests in `@donaoferta/api` (handler, health, HTTP routes)
 
 **Note:** `prod` environment is provisioned by the `deploy-prod.yml` workflow automatically when the PR merges to `main`. No manual prod apply required in TI10.
 

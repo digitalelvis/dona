@@ -9,6 +9,7 @@
     { "path": "packages/core-kernel" },
     { "path": "packages/ports" },
     { "path": "packages/http-kit" },
+    { "path": "packages/observability" },
     { "path": "apps/api" }
   ]
 }

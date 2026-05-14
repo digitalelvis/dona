@@ -8,8 +8,8 @@
 
 - **Phase:** Execute → **`observability-base`** (M0 next)
 - **Milestone:** M0 — Foundation
-- **Primary focus:** `observability-base` 📋 — baseline OpenTelemetry, structured logs, and X-Ray per roadmap.
-- **`infra-terraform-base`:** Implementation is **in the repo** (TI1–TI9b). **TI10:** GitHub `GHA_*` variables ✅; local **build** + **api** `terraform init`/`validate` ✅; remaining: **`terraform apply`** per env (or rely on deploy workflows), **smoke `curl …/health`**, **green CI PR**. Checklist: [.specs/features/infra-terraform-base/tasks.md](.specs/features/infra-terraform-base/tasks.md#next-steps-ti10--operator-checklist).
+- **Primary focus:** `observability-base` 🚧 — baseline OpenTelemetry, structured logs, and X-Ray per roadmap.
+- **`infra-terraform-base`:** ✅ Implemented in repo (TI1–TI9b). Run TI10 checklist when deploying or opening infra PRs: [.specs/features/infra-terraform-base/tasks.md](.specs/features/infra-terraform-base/tasks.md#next-steps-ti10--operator-checklist).
 - **Previous:** `foundation-monorepo` ✅ merged to `v0.1.x` via [PR #1](https://github.com/digitalelvis/dona/pull/1)
 
 ---
@@ -238,5 +238,5 @@ _None yet._
 
 ## Next session resume hint
 
-> `foundation-monorepo` ✅ Done (merged PR #1). `infra-terraform-base` code is in-repo; finish **[TI10](.specs/features/infra-terraform-base/tasks.md#next-steps-ti10--operator-checklist)** checklist (apply stacks, smoke `/health`, wire `GHA_STAGING_ROLE_ARN` / `GHA_PROD_ROLE_ARN`, prove CI on a PR).
-> Then: **`observability-base`** — `packages/observability`, logger, OpenTelemetry + ADOT, X-Ray (see roadmap M0).
+> `foundation-monorepo` ✅ Done (merged PR #1). `infra-terraform-base` code is in-repo; finish **[TI10](.specs/features/infra-terraform-base/tasks.md#next-steps-ti10--operator-checklist)** checklist when applying AWS or opening infra PRs.
+> **`observability-base`:** `packages/observability` + tests landed; wire `getTraceId` + `bootstrap` + ADOT in `apps/api` and Terraform per [.specs/features/observability-base/tasks.md](.specs/features/observability-base/tasks.md) (TO3–TO6).

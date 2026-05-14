@@ -1,7 +1,7 @@
 # infra-terraform-base Design
 
 **Spec:** [`./spec.md`](./spec.md)
-**Status:** Draft
+**Status:** Implemented in repo (operator checklist TI10 still applies per environment / PR).
 
 ---
 
@@ -237,9 +237,13 @@ The `@types/aws-lambda` package provides the `APIGatewayProxyEventV2` type for t
 | `source_code_hash` | string | yes | `filebase64sha256(var.filename)` for forced updates |
 | `memory_size` | number | no (128) | MB |
 | `timeout` | number | no (10) | Seconds |
-| `environment_variables` | map(string) | no ({}) | Env vars injected |
+| `environment` | string | yes | Tag label (`dev`, `staging`, `prod`) merged into resource tags |
+| `architecture` | string | no (`arm64`) | Lambda CPU architecture (`arm64` or `x86_64`) |
+| `environment_variables` | map(string) | no ({}) | Env vars injected (block omitted when empty) |
 | `layers` | list(string) | no ([]) | Layer ARNs |
 | `tags` | map(string) | no ({}) | Additional tags |
+
+**Tracing:** `aws_lambda_function` sets `tracing_config { mode = "PassThrough" }` so X-Ray / ADOT can own segment creation when layers and env vars are added under `observability-base`.
 
 **Outputs:** `function_arn`, `function_name`, `invoke_arn`, `role_arn`
 
@@ -312,31 +316,34 @@ Parameterized by `var.environment` (set via `-var-file=envs/<env>.tfvars`). Same
 
 Provisions:
 1. `data.archive_file` — zips `../../apps/api/dist/handler.mjs` → `handler.zip`
-2. `module.lambda` — Lambda function `donaoferta-api-${var.environment}` with memory/timeout/log_level from tfvars
+2. `module.lambda` — Lambda function `donaoferta-api-${var.environment}` with memory/timeout/`log_level` (as `LOG_LEVEL` env), `lambda_architecture` from tfvars (default `arm64`), and optional layers reserved for ADOT (`observability-base`)
 3. `module.http_api` — API Gateway `donaoferta-http-api-${var.environment}` routing all `$default` requests to the Lambda
 
 `envs/dev.tfvars`:
 ```hcl
-environment = "dev"
-memory_size = 128
-timeout     = 10
-log_level   = "debug"
+environment         = "dev"
+memory_size         = 128
+timeout             = 10
+log_level           = "debug"
+lambda_architecture = "arm64"
 ```
 
 `envs/staging.tfvars`:
 ```hcl
-environment = "staging"
-memory_size = 128
-timeout     = 10
-log_level   = "info"
+environment         = "staging"
+memory_size         = 128
+timeout             = 10
+log_level           = "info"
+lambda_architecture = "arm64"
 ```
 
 `envs/prod.tfvars`:
 ```hcl
-environment = "prod"
-memory_size = 256
-timeout     = 15
-log_level   = "warn"
+environment         = "prod"
+memory_size         = 256
+timeout             = 15
+log_level           = "warn"
+lambda_architecture = "arm64"
 ```
 
 `backends/dev.hcl`:

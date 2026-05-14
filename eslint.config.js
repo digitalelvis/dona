@@ -132,7 +132,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ["packages/*-kit/**/*.{ts,tsx}"],
+    files: ["packages/*-kit/**/*.{ts,tsx}", "packages/observability/**/*.{ts,tsx}"],
     rules: {
       "no-restricted-imports": ["error", { patterns: perPackageImportOverrides.kit }],
     },
