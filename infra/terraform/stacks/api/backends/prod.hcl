@@ -1,0 +1,5 @@
+bucket         = "donaoferta-tfstate-672755422869"
+key            = "api/prod/terraform.tfstate"
+region         = "us-east-1"
+dynamodb_table = "donaoferta-tf-locks"
+encrypt        = true

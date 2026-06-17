@@ -11,12 +11,16 @@ export interface RegisterHealthOptions {
 export function registerHealth(app: ApiApp, options: RegisterHealthOptions): void {
   const uptimeSeconds = options.uptimeSeconds ?? (() => Math.floor(process.uptime()));
 
+  /** Base `invoke_url` ends with `/`; send browsers to the health contract. */
+  app.get("/", (c) => c.redirect("/health", 302));
+
   app.get("/health", (c) => {
     void options.clock.nowEpochMs();
     return c.json({
       status: "ok" as const,
       uptimeSeconds: uptimeSeconds(),
       version: options.version,
+      traceId: null,
     });
   });
 }

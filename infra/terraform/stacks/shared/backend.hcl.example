@@ -1,0 +1,7 @@
+# Copy to `backend.hcl` and replace `111111111111` with  AWS account ID (same as bootstrap outputs).
+
+bucket         = "donaoferta-tfstate-111111111111"
+key            = "shared/terraform.tfstate"
+region         = "us-east-1"
+dynamodb_table = "donaoferta-tf-locks"
+encrypt        = true

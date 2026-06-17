@@ -1,7 +1,13 @@
 # ==========================================
+# Terraform — local backend partials (never commit real account IDs)
+# ==========================================
+infra/terraform/stacks/shared/backend.hcl
+
+# ==========================================
 # Node / pnpm / TypeScript
 # ==========================================
 node_modules/
+.pnpm-store/
 dist/
 **/dist-types/
 coverage/

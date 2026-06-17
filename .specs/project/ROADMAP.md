@@ -17,17 +17,25 @@ Milestones are organized around **independently shippable value**. Each mileston
 - pnpm + Turborepo monorepo with `lint`, `typecheck`, `test`, `build` pipelines
 - `packages/core-kernel` (Result, Clock, Id, Errors), `packages/ports` (interfaces), `packages/observability`
 - `apps/api` with a minimal `GET /health` Hono handler on Lambda + API Gateway HTTP API
-- `infra/terraform`: modules `lambda-fn`, `http-api`, `iam-policy`; stacks `shared` and `api`; environment `dev`
-- GitHub Actions CI: install → typecheck → test → build → terraform plan; deploy to `dev` on push to `main` via OIDC
-- Baseline observability: OpenTelemetry + ADOT layer; JSON logs; X-Ray enabled
+- `infra/terraform/bootstrap`: remote state (S3 + DynamoDB locking; `use_lockfile` migration when ready — see post-completion list below)
+- `infra/terraform`: modules `lambda-fn`, `http-api`, `iam-policy`; stacks **`shared`** (GitHub OIDC IAM for Actions) and **`api`** with **dev**, **staging**, and **prod** (`backends/*.hcl`, `envs/*.tfvars`)
+- GitHub Actions **CI** on pull requests to **`v0.1.x`** and **`main`**: install → typecheck → test → build → Terraform **init / validate / plan** for **`api` staging**
+- GitHub Actions **deploy**: push to **`v*.x`** → **Deploy staging**; push to **`main`** → **Deploy prod** (OIDC roles from `shared`)
+- Baseline observability (**planned** under `observability-base`): OpenTelemetry + ADOT layer; JSON logs; X-Ray enabled
 
 **Acceptance criteria:**
 
-- `curl https://api.dev.donaoferta.../health` returns `200` including `traceId`
-- CI pipeline is green end-to-end on a sample PR
-- Monthly cost of the `dev` environment ≤ US$ 1
+- `curl <deployed-api-invoke-url>/health` returns `200` with expected JSON for **staging** (and dev as applicable); trace correlation in responses or logs once `observability-base` is done
+- CI is green end-to-end on a sample PR to `v0.1.x` or `main`, including the **staging** Terraform plan job
+- Non-production environments remain within the project’s low monthly cost guardrail (validated during TI10 / operator sign-off)
 
-**Expected features:** `foundation-monorepo` ✅, `infra-terraform-base` 🚧, `observability-base` 📋
+**Expected features:** `foundation-monorepo` ✅, `infra-terraform-base` ✅, `observability-base` 🚧
+
+### M0 — post `infra-terraform-base` (before closing M0)
+
+- Complete **TI10** (AWS apply, smoke `curl …/health`, confirm GitHub `GHA_STAGING_ROLE_ARN` / `GHA_PROD_ROLE_ARN`, green CI on a real PR): operator checklist in [.specs/features/infra-terraform-base/tasks.md](.specs/features/infra-terraform-base/tasks.md) (“Next steps (TI10 — operator checklist)”).
+- **Terraform S3 backend:** address the deprecated `dynamodb_table` setting and migrate toward **`use_lockfile`** when the team standardises on a Terraform minor that documents the path (coordinate with `infra/terraform/stacks/shared/backend.hcl.example` and `infra/terraform/stacks/api/backends/*.hcl`).
+- **D-018 follow-up:** tighten root `engines.node` to **`22.x`** once contributors are on Node 22 (see [.specs/project/STATE.md](.specs/project/STATE.md) D-018).
 
 ---
 
